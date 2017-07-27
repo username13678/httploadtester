@@ -35,7 +35,25 @@ NUMBER is the number of processes to start.
 ## Load tester
 This section describre the loadtester code.
 
-The 
+
+### loadtester.py
+This file is the librabry that we will use to send queries and report statistics.
+
+Each HTTP connection runs in a separate thread. They are implemented by the
+class loadtester.ConnectionLoadTester. There are as many ConnectionLoadTester as
+we allow concurrent runs. The ConnectionLoadTester wait for requests to be sent
+in the `requests` queue. This queue is shared accross the pool.
+Each ConnectionLoadTester writes ton the `response` queue the satus message
+returned by the server and the latency observed between the request and the
+response.
+
+
+### loadtest.py
+This file launches the load test, rate limits the requests and display the
+results.
+
+To insure we don't exceed the maximum qps, we don't put more than qps requests
+in the requests queue per second.
 
 
 ## Improvements
@@ -43,3 +61,5 @@ We could improve the load tester by:
 - sending different requests
 - doing more statitics on the requests
 - use multiprocessing instead of multithreading
+- move the rate limit in loadtester.py
+- add tests

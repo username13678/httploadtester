@@ -20,17 +20,17 @@ class ConnectionLoadTester(Thread):
         """ Sends the requests in self.requests. Writes the responses status
         to self.responses."""
         while True:
-          request = self.requests.get()
-          response = None
-          latency = 0
-          try:
-              begin = time.time()
-              self.connection.request(*request)
-              status = self.connection.getresponse().status
-              latency = time.time() - begin
-          finally:
-              self.responses.put((status, latency))
-              self.requests.task_done()
+            request = self.requests.get()
+            latency = 0
+            status = None
+            try:
+                begin = time.time()
+                self.connection.request(*request)
+                status = self.connection.getresponse().status
+                latency = time.time() - begin
+            finally:
+                self.responses.put((status, latency))
+                self.requests.task_done()
 
 class ConnectionPool(object):
     """ Represents a pool of Connections."""
@@ -40,12 +40,12 @@ class ConnectionPool(object):
         self.requests contains the HTTP requests to send.
         self.responses contains the HTTP responses status of the requests.
         """
-        self.requests = Queue(concurrent) 
+        self.requests = Queue(concurrent)
         self.responses = Queue()
         for _ in range(concurrent):
-            connectionLoadTester = ConnectionLoadTester(
+            connection_load_tester = ConnectionLoadTester(
                 url, self.requests, self.responses)
-            connectionLoadTester.start()
+            connection_load_tester.start()
 
     def add_request(self):
         """ Adds a request to self.requests."""
