@@ -35,8 +35,5 @@ NUMBER is the number of processes to start.
 ## Load tester
 This section describre the loadtester code.
 
-### Command line interface
-
-### Multiprocessing
-
+### Concurency
 ## Improvements
