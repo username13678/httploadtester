@@ -32,9 +32,13 @@ def main(qps, concurrent, duration, url):
         for _ in range(qps):
             pool.add_request()
         time.sleep(max(begin_second + 1 - time.time(), 0))
-    status200, status500 = pool.finish()
+    status200, status500, min_latency, max_latency, mean_latency, number_requests = pool.finish()
     print('%i requests suceeded' % status200)
     print('%i requests failed' % status500)
+    print('%f minimum latency in seconds' % min_latency)
+    print('%f maximum latency in seconds' % max_latency)
+    print('%f average latency in seconds' % mean_latency)
+    print('%i requests were sent' % number_requests)
 
 if __name__ == "__main__":
     args = parse_arguments()

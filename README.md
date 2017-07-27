@@ -35,5 +35,11 @@ NUMBER is the number of processes to start.
 ## Load tester
 This section describre the loadtester code.
 
-### Concurency
+The 
+
+
 ## Improvements
+We could improve the load tester by:
+- sending different requests
+- doing more statitics on the requests
+- use multiprocessing instead of multithreading

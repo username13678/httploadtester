@@ -21,10 +21,15 @@ class ConnectionLoadTester(Thread):
         to self.responses."""
         while True:
           request = self.requests.get()
+          response = None
+          latency = 0
           try:
+              begin = time.time()
               self.connection.request(*request)
-              self.responses.put(self.connection.getresponse().status)
+              status = self.connection.getresponse().status
+              latency = time.time() - begin
           finally:
+              self.responses.put((status, latency))
               self.requests.task_done()
 
 class ConnectionPool(object):
@@ -50,11 +55,24 @@ class ConnectionPool(object):
         """ Waits for all the requests to be done and counts the reponses.
 
         Returns:
-            The number of response status 200 and 500 we got.
+            The number of response status 200 we got
+            The number of response status 500 we got
+            The minimum latency
+            The maximum latency
+            The mean latency
+            The number of requests sent
         """
         counter = Counter()
+        latencies = []
         while not self.responses.empty():
-            counter[self.responses.get_nowait()] += 1
-        return counter[200], counter[500]
+            status, latency = self.responses.get_nowait()
+            counter[status] += 1
+            latencies.append(latency)
+        return (counter[200],
+                counter[500],
+                min(latencies),
+                max(latencies),
+                sum(latencies)/len(latencies),
+                len(latencies))
 
 
